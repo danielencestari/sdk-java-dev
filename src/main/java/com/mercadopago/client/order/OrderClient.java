@@ -112,4 +112,42 @@ public class OrderClient extends MercadoPagoClient {
         return result;
 
     }
+
+
+    /**
+     * Method responsible for delete an order
+     *
+     * @param idOrder orderId
+     * @param idTransaction transactionId
+     * @return order response
+     * @throws MPException an error if the request fails
+     * @throws MPApiException an error if the request fails
+     */
+    public Order delete(String idOrder, String idTransaction ) throws MPException, MPApiException {
+        return this.process(idOrder);
+    }
+
+    /**
+     * Method responsible for deleting an order by ID
+     *
+     * @param idOrder orderId
+     * @param idTransaction transactionId
+     * @return order response
+     * @throws MPException an error if the request fails
+     * @throws MPApiException an error if the request fails
+     */
+    public Order delete(String idOrder, String idTransaction, MPRequestOptions requestOptions) throws MPException, MPApiException {
+        LOGGER.info("Sending order to delete");
+
+        if (idOrder == null || idTransaction == null || idOrder.isEmpty() || idTransaction.isEmpty()) {
+            throw new IllegalArgumentException("Order id cannot be null or empty");
+        }
+
+        String deleteUrl = String.format(URL_WITH_ID, idOrder) + "/transactions/" + idTransaction;
+
+        MPResponse response = send(deleteUrl, HttpMethod.DELETE, null, null, requestOptions);
+        Order result = Serializer.deserializeFromJson(Order.class, response.getContent());
+        result.setResponse(response);
+        return result;
+    }
 }
